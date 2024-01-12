@@ -17,9 +17,9 @@ export default ({ data }) => {
         { data.allMarkdownRemark.nodes.map(blogs => {
           console.log(blogs)
           return (
-            <div>
+            <div key={blogs.id}>
             <h3>{ blogs.frontmatter.title } - { blogs.frontmatter.date }</h3>
-            <h4 key={blogs.id}>{ blogs.excerpt }</h4>
+            <h4 >{ blogs.excerpt }</h4>
             </div>
           )
         }) }
@@ -46,7 +46,10 @@ export const query = graphql`
           description
           title
         }
-        excerpt
+        excerpt,
+        fields {
+        slug
+      }
       }
     }
   }
