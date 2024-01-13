@@ -10,40 +10,32 @@ const path = require(`path`)
  */
 exports.createPages = async ({ actions, graphql }) => {
   const { createPage } = actions
-  const blogPost = path.resolve(`src/templates/blog-post.js`)
-  return graphql(`
-  query loadPagesQuery ($limit: Int!) {
-    allMarkdownRemark(limit: $limit) {
-        nodes {
-          fields {
+  return await graphql(`
+  {
+    allMarkdownRemark {
+          nodes {
+            fields {
             slug
-          }
+        }
       }
     }
   }
-`, { limit: 1000 }).then(result => {
-  if (result.errors) {
-    throw result.errors
-  }
-
+  `).then(result => {
+    if (result.errors) {
+      throw result.errors
+    }
+    console.log(result.data.allMarkdownRemark)
   // Create blog post pages.
   result.data.allMarkdownRemark.nodes.forEach((node) => {
-    console.log(node)
+    console.log('HERE: LINE 30 ' + node.fields.slug)
         createPage({
           // Path for this page — required
           path: `${node.fields.slug}`,
-          component: blogPost,
+          component: path.resolve(`./src/templates/blog-post.js`),
           context: {
-            // Add optional context data to be inserted
-            // as props into the page component.
-            //
-            // The context data can also be used as
-            // arguments to the page GraphQL query.
-            //
-            // The page "path" is always available as a GraphQL
-            // argument.
+            id: node.id
           },
-        })
+      })
     })
   })
 },
@@ -52,7 +44,7 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
   const { createNodeField } = actions;
   if(node.internal.type === `MarkdownRemark`) {
     const slug = createFilePath({ node, getNode });
-
+    console.log('HERE: LINE 54 ' + slug)
     createNodeField({
       node,
       name: 'slug',

@@ -1,15 +1,18 @@
-import * as React from "react"
-import { Link } from "gatsby"
-import Layout from "../components/layout"
+import * as React from "react";
+import { Link } from "gatsby";
+import { graphql } from "gatsby";
+import Layout from "../components/layout";
 
 
-const blogPost = ( data ) => {
-    console.log(data)
+export default ({ data }) => {
+    const post = data.markdownRemark;
+    console.log( post );
     return(
         <Layout>
             <h2>Blog Post Page</h2>
             <div>
-                
+                <h3>{ post.frontmatter.title }</h3>
+                <div dangerouslySetInnerHTML={{ __html: post.html }}/>
             </div>
             <Link to="/">Go back to the homepage</Link>
         </Layout>
@@ -17,4 +20,17 @@ const blogPost = ( data ) => {
     
 }
 
-export default blogPost;
+export const query = graphql`
+    query($slug: String) {
+        markdownRemark(fields: {slug: {eq: $slug}}) {
+    id
+    fields {
+      slug
+    }
+    html
+    frontmatter {
+      title
+    }
+  }
+}
+`
